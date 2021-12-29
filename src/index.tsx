@@ -3,10 +3,32 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from "@apollo/client";
+
+const token = 'da2-yg24vzep6zgc5gzsftrp4hi65q' //TODO this obviously needs changin
+
+const link = createHttpLink({
+  uri: 'https://e2ktqhorwvdzxczqg5klacwlpy.appsync-api.us-east-1.amazonaws.com/graphql',
+  headers: {
+    "x-api-key": `${token}`
+  },
+})
+
+const client = new ApolloClient({
+  link: link,
+  cache: new InMemoryCache()
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
