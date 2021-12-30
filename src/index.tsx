@@ -9,6 +9,7 @@ import {
   ApolloProvider,
   createHttpLink,
 } from "@apollo/client";
+import CssBaseline from '@mui/material/CssBaseline';
 
 const token = 'da2-yg24vzep6zgc5gzsftrp4hi65q' //TODO this obviously needs changin
 
@@ -27,7 +28,9 @@ const client = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <CssBaseline>
+        <App />
+      </CssBaseline>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
