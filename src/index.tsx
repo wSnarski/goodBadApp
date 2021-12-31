@@ -10,6 +10,8 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import CssBaseline from '@mui/material/CssBaseline';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
 const token = 'da2-yg24vzep6zgc5gzsftrp4hi65q' //TODO this obviously needs changin
 
@@ -22,14 +24,22 @@ const link = createHttpLink({
 
 const client = new ApolloClient({
   link: link,
-  cache: new InMemoryCache()
+  cache: new InMemoryCache({
+    typePolicies: {
+      UserEvent: {
+        keyFields: ['userId','eventTime']
+      }
+    }
+  })
 });
 
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
       <CssBaseline>
-        <App />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <App />
+        </LocalizationProvider>
       </CssBaseline>
     </ApolloProvider>
   </React.StrictMode>,

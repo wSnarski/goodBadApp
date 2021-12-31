@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   useQuery,
   useMutation,
@@ -5,7 +6,6 @@ import {
 } from "@apollo/client";
 import Button from '@mui/material/Button';
 
-//TODO user management
 const USER_ID = '6RMb1MhYuju9qTiibjzm19Z80tX19anx'
 
 const TODAYS_EVENTS = gql`
@@ -44,21 +44,16 @@ function TodaysJudgement() {
     error: errorLoadingTodaysEvents,
     data: todaysEventsResponse
   } = useQuery(TODAYS_EVENTS, {
-    variables: { userId: USER_ID }
+    variables: { userId: USER_ID },
+    notifyOnNetworkStatusChange: true
   });
-  //TODO add timezone / offset to payload
-  const [judgeToday, { data: judgementResponse, loading: judgementPending, error: judgementError }] = useMutation(JUDGE_TODAY);
 
-
-  if (loadingTodaysEvents || judgementPending) return <p>Loading</p>;
-  if (errorLoadingTodaysEvents || judgementError) return <p>Error :(</p>;
-
-  //TODO filter by event type
-  //TODO pagination doesn't actually work because it's not hooked up in the resolver response
-  const todaysEvents = todaysEventsResponse.listTodaysEvents.items
-  const judgementEvent = judgementResponse && judgementResponse.judgeToday
-  //TODO is it better to refetch todays events instead of using both objects?
-  const activeJudgementEvent = judgementEvent || todaysEvents.slice(-1)[0]
+  const [judgeToday, { data: judgementResponse, loading: judgementPending, error: judgementError }] = useMutation(JUDGE_TODAY, {
+    refetchQueries: [
+      TODAYS_EVENTS,
+      'listMonthsEvents'
+    ]
+  });
 
   const judgeTodayGood = () => {
     judgeToday({ 
@@ -80,6 +75,13 @@ function TodaysJudgement() {
       }
     })
   }
+
+  if (loadingTodaysEvents || judgementPending) return <p>Loading</p>;
+  if (errorLoadingTodaysEvents || judgementError) return <p>Error :(</p>;
+
+  const todaysEvents = todaysEventsResponse.listTodaysEvents.items
+  const activeJudgementEvent = todaysEvents.slice(-1)[0]
+
   if(activeJudgementEvent) {
     const isGoodJudgement = activeJudgementEvent.eventPayload.isGoodJudgement
 
